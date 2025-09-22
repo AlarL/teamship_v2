@@ -4,7 +4,6 @@ import { playerActions } from '@/state/actions/player-actions';
 import TeamAlerts from '@/components/team-alerts';
 import TeamSituation from '@/components/team-situation';
 import ShipVitals from '@/components/ship-vitals';
-import QuickRoleSwitcher from '@/components/quick-role-switcher';
 import WeatherConditions from '@/components/weather-conditions';
 import type { AttemptLogEntry, Role } from '@/types/teamship';
 import { LEGENDS, MISSIONS } from '@/types/teamship';
@@ -1032,14 +1031,11 @@ const GameView: React.FC = () => {
                   <Settings className="w-5 h-5" />
                   {myRole ? `${ROLE_LABELS[myRole]} Controls` : 'Your Controls'}
                 </h3>
-                <div className="flex items-center gap-3">
-                  {myRole && (
-                    <div className="badge badge-warning badge-lg font-bold">
-                      {myRole.toUpperCase()}
-                    </div>
-                  )}
-                  <QuickRoleSwitcher className="flex-shrink-0" />
-                </div>
+                {myRole && (
+                  <div className="badge badge-warning badge-lg font-bold">
+                    {myRole.toUpperCase()}
+                  </div>
+                )}
               </div>
             </div>
             
