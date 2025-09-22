@@ -540,12 +540,16 @@ export default function useHostController() {
 				const timeElapsed = elapsed / 1000;
 				const timeLimit = totalDur / 1000;
 
+				// Flag to prevent multiple finalizeRun calls in same transaction
+				let gameFinalized = false;
+
 				const finalizeRun = (
 					reason: 'success' | 'timeout' | 'dead' | 'overflow'
 				) => {
-					if (ship.phase === 'finished') {
+					if (ship.phase === 'finished' || gameFinalized) {
 						return;
 					}
+					gameFinalized = true;
 
 					ship.phase = 'finished';
 					ship.endTimestamp = now;
