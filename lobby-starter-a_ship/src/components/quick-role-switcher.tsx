@@ -126,19 +126,6 @@ const QuickRoleSwitcher: React.FC<QuickRoleSwitcherProps> = ({ className }) => {
             );
           })}
           
-          <div className="divider my-1"></div>
-          
-          {/* Quick team overview */}
-          <li className="menu-title">
-            <span>Team ({filledSlots}/{totalSlots})</span>
-          </li>
-          {teamMembers.map((member, i) => (
-            <li key={i}>
-              <span className="text-xs opacity-70 cursor-default">
-                {member.role ? ROLE_ICONS[member.role] : '—'} {member.name}
-              </span>
-            </li>
-          ))}
         </ul>
       </div>
     </div>
