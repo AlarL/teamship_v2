@@ -509,26 +509,30 @@ export default function useHostController() {
 
 				// Update running stats
 				const stats = ship.currentAttemptStats;
-				stats.maxWater = Math.max(stats.maxWater, ship.water);
-				stats.minHealth = Math.min(stats.minHealth, ship.health);
-				stats.coopScoreSum += ship.coopScore;
-				stats.coopSamples++;
+				if (stats) {
+					stats.maxWater = Math.max(stats.maxWater, ship.water);
+					stats.minHealth = Math.min(stats.minHealth, ship.health);
+					stats.coopScoreSum += ship.coopScore;
+					stats.coopSamples++;
+				}
 
 				// Track player activity
-				for (const [connId, intent] of intentEntries) {
-					const player = aw[connId];
-					const displayName =
-						player?.data?.displayName || `Player-${connId.slice(-4)}`;
-					if (!stats.playerActions[connId]) {
-						stats.playerActions[connId] = {
-							displayName,
-							actions: 0,
-							lastActive: now
-						};
-					}
-					if (intent.updatedAt > stats.playerActions[connId].lastActive) {
-						stats.playerActions[connId].actions++;
-						stats.playerActions[connId].lastActive = now;
+				if (stats) {
+					for (const [connId, intent] of intentEntries) {
+						const player = aw[connId];
+						const displayName =
+							player?.data?.displayName || `Player-${connId.slice(-4)}`;
+						if (!stats.playerActions[connId]) {
+							stats.playerActions[connId] = {
+								displayName,
+								actions: 0,
+								lastActive: now
+							};
+						}
+						if (intent.updatedAt > stats.playerActions[connId].lastActive) {
+							stats.playerActions[connId].actions++;
+							stats.playerActions[connId].lastActive = now;
+						}
 					}
 				}
 

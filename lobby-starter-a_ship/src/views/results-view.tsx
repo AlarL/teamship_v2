@@ -90,19 +90,19 @@ const AttemptEntry: React.FC<AttemptEntryProps> = ({ attempt, index, total }) =>
 					{attempt.stats && (
 						<div className="grid grid-cols-2 gap-2 text-sm">
 							<div className="bg-base-300/30 rounded p-2 text-center">
-								<div className="font-bold">{Math.round(attempt.stats.maxWater || 0)}%</div>
+								<div className="font-bold">{Math.round(attempt.stats?.maxWater || 0)}%</div>
 								<div className="text-xs opacity-70">Peak Water</div>
 							</div>
 							<div className="bg-base-300/30 rounded p-2 text-center">
-								<div className="font-bold">{Math.round(attempt.stats.minHealth || 100)}%</div>
+								<div className="font-bold">{Math.round(attempt.stats?.minHealth || 100)}%</div>
 								<div className="text-xs opacity-70">Lowest Health</div>
 							</div>
 							<div className="bg-base-300/30 rounded p-2 text-center">
-								<div className="font-bold">{Math.round(attempt.stats.avgCoopScore || 0)}</div>
+								<div className="font-bold">{Math.round(attempt.stats?.avgCoopScore || 0)}</div>
 								<div className="text-xs opacity-70">Avg Teamwork</div>
 							</div>
 							<div className="bg-base-300/30 rounded p-2 text-center">
-								<div className="font-bold">{attempt.stats.activePlayers || 0}</div>
+								<div className="font-bold">{attempt.stats?.activePlayers || 0}</div>
 								<div className="text-xs opacity-70">Active Players</div>
 							</div>
 						</div>
@@ -302,30 +302,30 @@ const ResultsView: React.FC = () => {
         {ship.teamAnalytics && (
           <div className="space-y-4">
             {/* Individual Player Performance */}
-            {ship.teamAnalytics.playerStats && Object.keys(ship.teamAnalytics.playerStats).length > 0 && (
+            {ship.teamAnalytics?.playerStats && Object.keys(ship.teamAnalytics.playerStats).length > 0 && (
               <div className="card bg-base-100 shadow-sm">
                 <div className="card-body">
                   <h3 className="card-title text-lg">👥 Individual Performance</h3>
                   <div className="space-y-3">
-                    {Object.entries(ship.teamAnalytics.playerStats).map(([connId, stats]) => (
+                    {Object.entries(ship.teamAnalytics.playerStats || {}).map(([connId, stats]) => (
                       <div key={connId} className="bg-base-200 rounded p-3">
                         <div className="flex justify-between items-start mb-2">
-                          <div className="font-medium">{stats.displayName || `Player-${connId.slice(-4)}`}</div>
-                          <div className="text-sm opacity-70">Score: {Math.round(stats.effectivenessScore)}/100</div>
+                          <div className="font-medium">{stats?.displayName || `Player-${connId.slice(-4)}`}</div>
+                          <div className="text-sm opacity-70">Score: {Math.round(stats?.effectivenessScore || 0)}/100</div>
                         </div>
                         <div className="grid grid-cols-2 gap-2 text-sm">
-                          <div>Active Time: {formatDuration(stats.totalActiveTime)}</div>
-                          <div>Actions: {stats.actionsPerformed}</div>
-                          <div>Role Switches: {stats.rolesSwitched}</div>
-                          <div>Critical Responses: {stats.criticalMoments.filter(m => m.responded).length}/{stats.criticalMoments.length}</div>
+                          <div>Active Time: {formatDuration(stats?.totalActiveTime || 0)}</div>
+                          <div>Actions: {stats?.actionsPerformed || 0}</div>
+                          <div>Role Switches: {stats?.rolesSwitched || 0}</div>
+                          <div>Critical Responses: {(stats?.criticalMoments || []).filter(m => m?.responded).length}/{(stats?.criticalMoments || []).length}</div>
                         </div>
                         {/* Role Timeline */}
                         <div className="mt-2">
                           <div className="text-xs opacity-70 mb-1">Roles Played:</div>
                           <div className="flex flex-wrap gap-1">
-                            {stats.rolesPlayedLog.map((roleLog, idx) => (
+                            {(stats?.rolesPlayedLog || []).map((roleLog, idx) => (
                               <span key={idx} className="badge badge-sm">
-                                {roleLog.role ? ROLE_LABELS[roleLog.role] : 'None'}
+                                {roleLog?.role ? ROLE_LABELS[roleLog.role] : 'None'}
                               </span>
                             ))}
                           </div>
@@ -343,31 +343,31 @@ const ResultsView: React.FC = () => {
                 <h3 className="card-title text-lg">🤝 Team Coordination</h3>
                 <div className="grid grid-cols-2 gap-4">
                   <div className="bg-base-200 rounded p-3 text-center">
-                    <div className="text-lg font-bold text-primary">{ship.teamAnalytics.teamwork.simultaneousActions}</div>
+                    <div className="text-lg font-bold text-primary">{ship.teamAnalytics?.teamwork?.simultaneousActions || 0}</div>
                     <div className="text-sm opacity-70">Coordinated Actions</div>
                   </div>
                   <div className="bg-base-200 rounded p-3 text-center">
-                    <div className="text-lg font-bold text-info">{Math.round(ship.teamAnalytics.teamwork.roleBalance)}/100</div>
+                    <div className="text-lg font-bold text-info">{Math.round(ship.teamAnalytics?.teamwork?.roleBalance || 0)}/100</div>
                     <div className="text-sm opacity-70">Role Balance</div>
                   </div>
                   <div className="bg-base-200 rounded p-3 text-center">
-                    <div className="text-lg font-bold text-success">{Math.round(ship.teamAnalytics.teamwork.communicationScore)}/100</div>
+                    <div className="text-lg font-bold text-success">{Math.round(ship.teamAnalytics?.teamwork?.communicationScore || 0)}/100</div>
                     <div className="text-sm opacity-70">Communication</div>
                   </div>
                   <div className="bg-base-200 rounded p-3 text-center">
-                    <div className="text-lg font-bold text-warning">{ship.teamAnalytics.teamwork.criticalFailures.length}</div>
+                    <div className="text-lg font-bold text-warning">{ship.teamAnalytics?.teamwork?.criticalFailures?.length || 0}</div>
                     <div className="text-sm opacity-70">Missed Responses</div>
                   </div>
                 </div>
-                
+
                 {/* Critical Failures Details */}
-                {ship.teamAnalytics.teamwork.criticalFailures.length > 0 && (
+                {ship.teamAnalytics?.teamwork?.criticalFailures?.length > 0 && (
                   <div className="mt-4">
                     <div className="font-medium mb-2">Critical Moments Missed:</div>
                     <div className="space-y-1">
-                      {ship.teamAnalytics.teamwork.criticalFailures.slice(0, 3).map((failure, idx) => (
+                      {(ship.teamAnalytics?.teamwork?.criticalFailures || []).slice(0, 3).map((failure, idx) => (
                         <div key={idx} className="text-sm bg-warning/10 text-warning rounded p-2">
-                          <span className="font-medium">{formatDuration(failure.time - ship.startTimestamp)}</span> - {failure.reason}
+                          <span className="font-medium">{formatDuration((failure?.time || 0) - (ship.startTimestamp || 0))}</span> - {failure?.reason || 'Unknown'}
                         </div>
                       ))}
                     </div>
@@ -382,19 +382,19 @@ const ResultsView: React.FC = () => {
                 <h3 className="card-title text-lg">📊 Mission Progression</h3>
                 <div className="grid grid-cols-2 gap-4">
                   <div className="bg-base-200 rounded p-3 text-center">
-                    <div className="text-lg font-bold">{ship.teamAnalytics.progression.phasesCompleted}</div>
+                    <div className="text-lg font-bold">{ship.teamAnalytics?.progression?.phasesCompleted || 0}</div>
                     <div className="text-sm opacity-70">Phases Completed</div>
                   </div>
                   <div className="bg-base-200 rounded p-3 text-center">
-                    <div className="text-lg font-bold text-success">{ship.teamAnalytics.progression.eventsHandledWell}/{ship.teamAnalytics.progression.eventsEncountered}</div>
+                    <div className="text-lg font-bold text-success">{ship.teamAnalytics?.progression?.eventsHandledWell || 0}/{ship.teamAnalytics?.progression?.eventsEncountered || 0}</div>
                     <div className="text-sm opacity-70">Events Handled Well</div>
                   </div>
                   <div className="bg-base-200 rounded p-3 text-center">
-                    <div className="text-lg font-bold text-error">{formatDuration(ship.teamAnalytics.progression.timeSpentInDanger)}</div>
+                    <div className="text-lg font-bold text-error">{formatDuration(ship.teamAnalytics?.progression?.timeSpentInDanger || 0)}</div>
                     <div className="text-sm opacity-70">Time in Danger</div>
                   </div>
                   <div className="bg-base-200 rounded p-3 text-center">
-                    <div className="text-lg font-bold text-info">{Math.round(ship.teamAnalytics.progression.averageHealthPerPhase.reduce((a, b) => a + b, 0) / ship.teamAnalytics.progression.averageHealthPerPhase.length || 0)}%</div>
+                    <div className="text-lg font-bold text-info">{Math.round((ship.teamAnalytics?.progression?.averageHealthPerPhase || []).reduce((a, b) => a + b, 0) / Math.max(1, (ship.teamAnalytics?.progression?.averageHealthPerPhase || []).length))}%</div>
                     <div className="text-sm opacity-70">Avg Health</div>
                   </div>
                 </div>
@@ -409,23 +409,23 @@ const ResultsView: React.FC = () => {
                   {(() => {
                     const recommendations = [];
                     
-                    if (ship.teamAnalytics.teamwork.roleBalance < 50) {
+                    if ((ship.teamAnalytics?.teamwork?.roleBalance || 0) < 50) {
                       recommendations.push("🔄 Switch roles more frequently to balance workload");
                     }
-                    
-                    if (ship.teamAnalytics.teamwork.criticalFailures.length > 3) {
+
+                    if ((ship.teamAnalytics?.teamwork?.criticalFailures?.length || 0) > 3) {
                       recommendations.push("⚡ React faster to critical events - practice spotting hazards");
                     }
-                    
-                    if (ship.teamAnalytics.teamwork.simultaneousActions < 2) {
+
+                    if ((ship.teamAnalytics?.teamwork?.simultaneousActions || 0) < 2) {
                       recommendations.push("🤝 Coordinate better - act together during emergencies");
                     }
-                    
-                    if (ship.teamAnalytics.progression.timeSpentInDanger > 30000) {
+
+                    if ((ship.teamAnalytics?.progression?.timeSpentInDanger || 0) > 30000) {
                       recommendations.push("🚨 Keep ship healthier - focus more on bailing and repairs");
                     }
-                    
-                    if (Object.values(ship.teamAnalytics.playerStats || {}).some(p => p.actionsPerformed < 10)) {
+
+                    if (Object.values(ship.teamAnalytics?.playerStats || {}).some(p => (p?.actionsPerformed || 0) < 10)) {
                       recommendations.push("🎯 Everyone should stay more active - no passengers!");
                     }
                     
