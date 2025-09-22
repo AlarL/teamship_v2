@@ -61,6 +61,9 @@ export default function useHostController() {
 	// Run host logic
 	useEffect(() => {
 		if (!lobbyConnected || !isHost) {
+			if (import.meta.env.DEV) {
+				console.log(`[DEBUG] useHostController not running - isHost: ${isHost}, lobbyConnected: ${lobbyConnected}`);
+			}
 			return;
 		}
 
@@ -609,10 +612,17 @@ export default function useHostController() {
 					ship.currentAttemptStats = null;
 				};
 
-					const hullGone = ship.health <= 1; // display rounds to 0 by then
+					const hullGone = ship.health <= 0; // game over when health hits 0
 					const floodedOut = ship.water >= 99;
+
+					// Debug game over conditions
+					if (ship.health <= 5 || ship.water >= 95) {
+						console.log(`[DEBUG] Health: ${ship.health.toFixed(2)}%, Water: ${ship.water.toFixed(2)}%, HullGone: ${hullGone}, FloodedOut: ${floodedOut}`);
+					}
+
 					if (hullGone || floodedOut) {
 						const reason = hullGone ? 'dead' : 'overflow';
+						console.log(`[DEBUG] GAME OVER! Reason: ${reason}, Health: ${ship.health}, Water: ${ship.water}`);
 						finalizeRun(reason);
 						return;
 					}
