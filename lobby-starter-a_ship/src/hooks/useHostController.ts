@@ -510,33 +510,41 @@ export default function useHostController() {
 					};
 				}
 
-				// Update running stats
-				const stats = ship.currentAttemptStats;
-				if (stats && stats.maxWater !== undefined) {
-					stats.maxWater = Math.max(stats.maxWater, ship.water);
-					stats.minHealth = Math.min(stats.minHealth, ship.health);
-					stats.coopScoreSum += ship.coopScore;
-					stats.coopSamples++;
-				}
+				// Update running stats - NUCLEAR SAFE VERSION
+				try {
+					const stats = ship.currentAttemptStats;
+					if (stats && typeof stats === 'object' && 'maxWater' in stats && stats.maxWater != null) {
+						stats.maxWater = Math.max(stats.maxWater || 0, ship.water || 0);
+						stats.minHealth = Math.min(stats.minHealth || 100, ship.health || 0);
+						stats.coopScoreSum = (stats.coopScoreSum || 0) + (ship.coopScore || 0);
+						stats.coopSamples = (stats.coopSamples || 0) + 1;
 
-				// Track player activity
-				if (stats) {
-					for (const [connId, intent] of intentEntries) {
-						const player = aw[connId];
-						const displayName =
-							player?.data?.displayName || `Player-${connId.slice(-4)}`;
-						if (!stats.playerActions[connId]) {
-							stats.playerActions[connId] = {
-								displayName,
-								actions: 0,
-								lastActive: now
-							};
-						}
-						if (intent.updatedAt > stats.playerActions[connId].lastActive) {
-							stats.playerActions[connId].actions++;
-							stats.playerActions[connId].lastActive = now;
+						// Track player activity - NUCLEAR SAFE VERSION
+						if (stats.playerActions && typeof stats.playerActions === 'object') {
+							for (const [connId, intent] of intentEntries) {
+								if (!connId || !intent) continue;
+								const player = aw[connId];
+								const displayName = player?.data?.displayName || `Player-${connId.slice(-4)}`;
+
+								if (!stats.playerActions[connId]) {
+									stats.playerActions[connId] = {
+										displayName,
+										actions: 0,
+										lastActive: now
+									};
+								}
+
+								const playerAction = stats.playerActions[connId];
+								if (playerAction && intent.updatedAt > (playerAction.lastActive || 0)) {
+									playerAction.actions = (playerAction.actions || 0) + 1;
+									playerAction.lastActive = now;
+								}
+							}
 						}
 					}
+				} catch (error) {
+					console.error('[NUCLEAR] Stats update failed:', error);
+					// Continue without stats tracking
 				}
 
 				// End conditions
@@ -549,53 +557,75 @@ export default function useHostController() {
 				const finalizeRun = (
 					reason: 'success' | 'timeout' | 'dead' | 'overflow'
 				) => {
-					if (ship.phase === 'finished' || gameFinalized) {
-						return;
-					}
-					gameFinalized = true;
-
-					ship.phase = 'finished';
-					ship.endTimestamp = now;
-
-					const attemptLog = ship.attemptLog ?? [];
-					const attemptStats = ship.currentAttemptStats || {
-						maxWater: ship.water,
-						minHealth: ship.health,
-						coopScoreSum: ship.coopScore,
-						coopSamples: 1,
-						playerActions: {},
-						startTime: ship.startTimestamp || now
-					};
-					const playerStats = Object.values(attemptStats.playerActions || {});
-					const mostActive = playerStats.reduce(
-						(best: any, current: any) =>
-							current.actions > (best?.actions || 0) ? current : best,
-						null as any
-					);
-
-					attemptLog.push({
-						at: ship.startTimestamp || now,
-						finishedAt: now,
-						distLeft: reason === 'success' ? 0 : ship.distanceRemaining,
-						reason,
-						stats: {
-							maxWater: attemptStats.maxWater ?? ship.water,
-							minHealth: attemptStats.minHealth ?? ship.health,
-							avgCoopScore:
-								attemptStats.coopSamples && attemptStats.coopSamples > 0
-									? attemptStats.coopScoreSum / attemptStats.coopSamples
-									: ship.coopScore,
-							activePlayers: playerStats.length,
-							endHealth: ship.health,
-							endWater: ship.water,
-							durationMs: Math.max(0, now - (attemptStats.startTime ?? ship.startTimestamp ?? now))
-						},
-						teamPerf: {
-							mostActive: mostActive?.displayName || 'N/A',
-							bestResponder: mostActive?.displayName || 'N/A',
-							totalSwitches: 0
+					try {
+						if (ship.phase === 'finished' || gameFinalized) {
+							console.log('[NUCLEAR] finalizeRun already called, skipping');
+							return;
 						}
-					});
+						gameFinalized = true;
+
+						console.log('[NUCLEAR] Starting finalizeRun:', reason);
+
+						ship.phase = 'finished';
+						ship.endTimestamp = now;
+
+						const attemptLog = Array.isArray(ship.attemptLog) ? ship.attemptLog : [];
+
+						// NUCLEAR SAFE stats creation
+						const currentStats = ship.currentAttemptStats;
+						const attemptStats = (currentStats && typeof currentStats === 'object') ? {
+							maxWater: currentStats.maxWater || ship.water || 0,
+							minHealth: currentStats.minHealth || ship.health || 100,
+							coopScoreSum: currentStats.coopScoreSum || ship.coopScore || 0,
+							coopSamples: currentStats.coopSamples || 1,
+							playerActions: currentStats.playerActions || {},
+							startTime: currentStats.startTime || ship.startTimestamp || now
+						} : {
+							maxWater: ship.water || 0,
+							minHealth: ship.health || 100,
+							coopScoreSum: ship.coopScore || 0,
+							coopSamples: 1,
+							playerActions: {},
+							startTime: ship.startTimestamp || now
+						};
+
+						// NUCLEAR SAFE player stats processing
+						const playerActionsObj = attemptStats.playerActions || {};
+						const playerStats = Object.values(playerActionsObj).filter(p => p && typeof p === 'object');
+						const mostActive = playerStats.reduce(
+							(best: any, current: any) => {
+								const currentActions = current?.actions || 0;
+								const bestActions = best?.actions || 0;
+								return currentActions > bestActions ? current : best;
+							},
+							{ displayName: 'N/A', actions: 0 }
+						);
+
+						// NUCLEAR SAFE attempt log entry
+						const newAttemptEntry = {
+							at: ship.startTimestamp || now,
+							finishedAt: now,
+							distLeft: reason === 'success' ? 0 : (ship.distanceRemaining || 0),
+							reason,
+							stats: {
+								maxWater: attemptStats?.maxWater || ship.water || 0,
+								minHealth: attemptStats?.minHealth || ship.health || 100,
+								avgCoopScore: attemptStats?.coopSamples > 0
+									? (attemptStats.coopScoreSum || 0) / attemptStats.coopSamples
+									: (ship.coopScore || 0),
+								activePlayers: playerStats?.length || 0,
+								endHealth: ship.health || 0,
+								endWater: ship.water || 0,
+								durationMs: Math.max(0, now - (attemptStats?.startTime || ship.startTimestamp || now))
+							},
+							teamPerf: {
+								mostActive: mostActive?.displayName || 'N/A',
+								bestResponder: mostActive?.displayName || 'N/A',
+								totalSwitches: 0
+							}
+						};
+
+						attemptLog.push(newAttemptEntry);
 
 					if (import.meta.env.DEV) {
 						console.info('[Host] Finalized attempt', {
@@ -607,9 +637,19 @@ export default function useHostController() {
 						});
 					}
 
-					ship.attemptLog = attemptLog;
-					ship.attempts = attemptLog.length;
-					ship.currentAttemptStats = null;
+						ship.attemptLog = attemptLog;
+						ship.attempts = attemptLog.length;
+						ship.currentAttemptStats = null;
+
+						console.log('[NUCLEAR] finalizeRun completed successfully');
+
+					} catch (error) {
+						console.error('[NUCLEAR] finalizeRun failed:', error);
+						// Force game to end even if stats fail
+						ship.phase = 'finished';
+						ship.endTimestamp = now;
+						gameFinalized = true;
+					}
 				};
 
 					const hullGone = ship.health <= 0; // game over when health hits 0
