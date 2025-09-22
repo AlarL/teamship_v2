@@ -1,0 +1,16 @@
+version: '3.8'
+
+services:
+  teamship:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "3002:5173"  # Using available port 3002 since others are taken
+    volumes:
+      - .:/app
+      - /app/node_modules
+    environment:
+      - NODE_ENV=development
+    stdin_open: true
+    tty: true

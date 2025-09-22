@@ -1,0 +1,118 @@
+/* Kokimoki Theme Styles */
+/* Auto-generated CSS variables based on theme configuration */
+
+:root {
+  /* Color Variables */
+  --km-color-base-100: oklch(100% 0 0);
+  --km-color-base-200: oklch(97% 0 0);
+  --km-color-base-300: oklch(92% 0 0);
+  --km-color-base-content: oklch(20% 0 0);
+  
+  --km-color-primary: oklch(85% 0.199 91.936);
+  --km-color-primary-content: oklch(42% 0.095 57.708);
+  
+  --km-color-secondary: oklch(75% 0.183 55.934);
+  --km-color-secondary-content: oklch(40% 0.123 38.172);
+  
+  --km-color-accent: oklch(0% 0 0);
+  --km-color-accent-content: oklch(100% 0 0);
+  
+  --km-color-neutral: oklch(37% 0.01 67.558);
+  --km-color-neutral-content: oklch(92% 0.003 48.717);
+  
+  --km-color-info: oklch(74% 0.16 232.661);
+  --km-color-info-content: oklch(39% 0.09 240.876);
+  
+  --km-color-success: oklch(76% 0.177 163.223);
+  --km-color-success-content: oklch(37% 0.077 168.94);
+  
+  --km-color-warning: oklch(82% 0.189 84.429);
+  --km-color-warning-content: oklch(41% 0.112 45.904);
+  
+  --km-color-error: oklch(70% 0.191 22.216);
+  --km-color-error-content: oklch(39% 0.141 25.723);
+  
+  /* Size and Border Variables */
+  --km-radius-selector: 1rem;
+  --km-radius-field: 0.5rem;
+  --km-radius-box: 1rem;
+  
+  --km-size-selector: 0.25rem;
+  --km-size-field: 0.25rem;
+  
+  --km-border: 1px;
+  --km-noise: 0;
+  --km-depth: 1;
+}
+
+/* TeamShip Game Specific Styles */
+.teamship-theme {
+  /* Apply theme colors to game elements */
+  background-color: var(--km-color-base-100);
+  color: var(--km-color-base-content);
+}
+
+.teamship-primary {
+  background-color: var(--km-color-primary);
+  color: var(--km-color-primary-content);
+  border-radius: var(--km-radius-field);
+}
+
+.teamship-secondary {
+  background-color: var(--km-color-secondary);
+  color: var(--km-color-secondary-content);
+  border-radius: var(--km-radius-field);
+}
+
+.teamship-card {
+  background-color: var(--km-color-base-200);
+  border-radius: var(--km-radius-box);
+  border: var(--km-border) solid var(--km-color-base-300);
+}
+
+/* Component specific styles using theme variables */
+.km-button {
+  border-radius: var(--km-radius-field);
+  border-width: var(--km-border);
+  padding: calc(var(--km-size-field) * 2) calc(var(--km-size-field) * 3);
+}
+
+.km-input {
+  border-radius: var(--km-radius-field);
+  border-width: var(--km-border);
+  padding: var(--km-size-field);
+}
+
+.km-card {
+  border-radius: var(--km-radius-box);
+  border-width: var(--km-border);
+}
+
+.km-selector {
+  border-radius: var(--km-radius-selector);
+  padding: var(--km-size-selector);
+}
+
+/* Shadow effects when depth is enabled */
+.km-depth-shadow {
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+}
+
+/* Utility classes for quick styling */
+.km-bg-primary { background-color: var(--km-color-primary); color: var(--km-color-primary-content); }
+.km-bg-secondary { background-color: var(--km-color-secondary); color: var(--km-color-secondary-content); }
+.km-bg-accent { background-color: var(--km-color-accent); color: var(--km-color-accent-content); }
+.km-bg-neutral { background-color: var(--km-color-neutral); color: var(--km-color-neutral-content); }
+.km-bg-info { background-color: var(--km-color-info); color: var(--km-color-info-content); }
+.km-bg-success { background-color: var(--km-color-success); color: var(--km-color-success-content); }
+.km-bg-warning { background-color: var(--km-color-warning); color: var(--km-color-warning-content); }
+.km-bg-error { background-color: var(--km-color-error); color: var(--km-color-error-content); }
+
+.km-text-primary { color: var(--km-color-primary); }
+.km-text-secondary { color: var(--km-color-secondary); }
+.km-text-accent { color: var(--km-color-accent); }
+.km-text-neutral { color: var(--km-color-neutral); }
+.km-text-info { color: var(--km-color-info); }
+.km-text-success { color: var(--km-color-success); }
+.km-text-warning { color: var(--km-color-warning); }
+.km-text-error { color: var(--km-color-error); }

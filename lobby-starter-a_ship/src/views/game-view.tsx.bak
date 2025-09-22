@@ -1,0 +1,161 @@
+import { useLobbyContext } from '@/components/lobby/provider';
+import { useIntents } from '@/state/actions/game-actions';
+import { playerActions } from '@/state/actions/player-actions';
+import type { Role } from '@/types/teamship';
+import { LEGENDS } from '@/types/teamship';
+import { useSnapshot } from 'valtio';
+import { kmClient } from '@/services/km-client';
+import * as React from 'react';
+
+function HUD() {
+  const { lobbyStore } = useLobbyContext();
+  const { ship } = useSnapshot(lobbyStore.proxy);
+  const legend = LEGENDS[ship.legendId];
+  return (
+    <div className="grid grid-cols-3 gap-2 text-center text-sm">
+      <div className="stat bg-base-100">
+        <div className="stat-title">Health</div>
+        <div className="stat-value text-success">{Math.round(ship.health)}</div>
+      </div>
+      <div className="stat bg-base-100">
+        <div className="stat-title">Speed</div>
+        <div className="stat-value">{ship.speed.toFixed(1)}</div>
+      </div>
+      <div className="stat bg-base-100">
+        <div className="stat-title">Progress</div>
+        <div className="stat-value">{Math.max(0, 100 - Math.round((ship.distanceRemaining / legend.targetDistance) * 100))}%</div>
+      </div>
+      <div className="stat bg-base-100">
+        <div className="stat-title">Heading</div>
+        <div className="stat-value">{Math.round(ship.heading)}°</div>
+      </div>
+      <div className="stat bg-base-100">
+        <div className="stat-title">Target</div>
+        <div className="stat-value">{Math.round(ship.targetHeading)}°</div>
+      </div>
+      <div className="stat bg-base-100">
+        <div className="stat-title">Coop</div>
+        <div className="stat-value">{Math.round(ship.coopScore)}</div>
+      </div>
+    </div>
+  );
+}
+
+function HelmsmanControls() {
+  const setIntent = useIntents();
+  return (
+    <div className="grid grid-cols-2 gap-2">
+      <button className="btn btn-lg" onTouchStart={() => setIntent({ helmTurn: -1 })} onTouchEnd={() => setIntent({ helmTurn: 0 })} onMouseDown={() => setIntent({ helmTurn: -1 })} onMouseUp={() => setIntent({ helmTurn: 0 })}>
+        ◀ Left
+      </button>
+      <button className="btn btn-lg" onTouchStart={() => setIntent({ helmTurn: 1 })} onTouchEnd={() => setIntent({ helmTurn: 0 })} onMouseDown={() => setIntent({ helmTurn: 1 })} onMouseUp={() => setIntent({ helmTurn: 0 })}>
+        Right ▶
+      </button>
+    </div>
+  );
+}
+
+function Slider({ label, onChange, value }: { label: string; onChange: (v: number) => void; value?: number }) {
+  return (
+    <div className="space-y-1">
+      <div className="text-sm opacity-80">{label}</div>
+      <input
+        type="range"
+        min={0}
+        max={100}
+        defaultValue={Math.round((value ?? 0.5) * 100)}
+        className="range range-primary"
+        onChange={(e) => onChange(Number(e.target.value) / 100)}
+      />
+    </div>
+  );
+}
+
+function SailControls() {
+  const setIntent = useIntents();
+  return <Slider label="Sail Trim" onChange={(v) => setIntent({ sailTrim: v })} />;
+}
+
+function EngineerControls() {
+  const setIntent = useIntents();
+  return <Slider label="Throttle" onChange={(v) => setIntent({ throttle: v })} />;
+}
+
+function LookoutControls() {
+  const setIntent = useIntents();
+  return (
+    <button className="btn btn-warning btn-lg w-full" onClick={() => setIntent({ lookoutAck: Date.now() })}>
+      Acknowledge Hazard
+    </button>
+  );
+}
+
+function NavigatorControls() {
+  const { lobbyStore } = useLobbyContext();
+  const { ship } = useSnapshot(lobbyStore.proxy);
+  const setIntent = useIntents();
+  return (
+    <Slider
+      label={`Target Heading (${Math.round(ship.targetHeading)}°)`}
+      value={ship.targetHeading / 360}
+      onChange={(v) => setIntent({ navigatorHeading: Math.round(v * 360) })}
+    />
+  );
+}
+
+function ControlsForRole({ role }: { role: Role }) {
+  switch (role) {
+    case 'helmsman':
+      return <HelmsmanControls />;
+    case 'sail':
+      return <SailControls />;
+    case 'engineer':
+      return <EngineerControls />;
+    case 'lookout':
+      return <LookoutControls />;
+    case 'navigator':
+      return <NavigatorControls />;
+    default:
+      return null;
+  }
+}
+
+const GameView: React.FC = () => {
+  const { lobbyStore, lobbyAwareness } = useLobbyContext();
+  const { ship } = useSnapshot(lobbyStore.proxy);
+  const presence = useSnapshot(lobbyAwareness.proxy);
+  const me = presence[kmClient.connectionId] ?? null;
+  const myRole = me?.role ?? (Object.values(presence).find((p) => p.displayName)?.role as Role | null);
+
+  React.useEffect(() => {
+    if (ship.phase === 'finished') {
+      playerActions.goTo('results');
+    }
+  }, [ship.phase]);
+
+  return (
+    <div className="container mx-auto p-4 lg:p-6">
+      <div className="mx-auto max-w-screen-sm space-y-4">
+        {ship.phase === 'countdown' && (
+          <div className="alert alert-info">
+            <span>Starting in {ship.countdown}…</span>
+          </div>
+        )}
+        <HUD />
+        <div className="card bg-base-100 shadow-sm">
+          <div className="card-body space-y-3">
+            <h3 className="card-title">Your Controls</h3>
+            {myRole ? (
+              <ControlsForRole role={myRole} />
+            ) : (
+              <div className="text-sm opacity-80">No role selected. Return to role selection.</div>
+            )}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default GameView;
+

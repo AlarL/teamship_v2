@@ -1,0 +1,13 @@
+{
+  "permissions": {
+    "allow": [
+      "Read(/C:\\Users\\Alar\\OneDrive\\Dokumendid\\Arendus ja AI\\lobby-starter-a_ship/**)",
+      "Bash(npm install)",
+      "Read(/C:\\Users\\Alar\\OneDrive\\Dokumendid\\Arendus ja AI\\lobby-starter-a_ship/**)",
+      "Read(/C:\\Users\\Alar\\OneDrive\\Dokumendid\\Arendus ja AI\\lobby-starter-a_ship\\src\\hooks/**)",
+      "Bash(npm run dev:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

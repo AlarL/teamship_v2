@@ -1,0 +1,38 @@
+# yaml-language-server: $schema=./.kokimoki/schema.json
+
+# Theme
+theme:
+  colorBase100: 'oklch(98% 0.01 210)'
+  colorBase200: 'oklch(95% 0.015 215)'
+  colorBase300: 'oklch(90% 0.02 215)'
+  colorBaseContent: 'oklch(25% 0.03 230)'
+  colorPrimary: 'oklch(75% 0.15 220)'
+  colorPrimaryContent: 'oklch(98% 0.02 220)'
+  colorSecondary: 'oklch(65% 0.12 200)'
+  colorSecondaryContent: 'oklch(95% 0.02 200)'
+  colorAccent: 'oklch(0% 0 0)'
+  colorAccentContent: 'oklch(100% 0 0)'
+  colorNeutral: 'oklch(37% 0.01 67.558)'
+  colorNeutralContent: 'oklch(92% 0.003 48.717)'
+  colorInfo: 'oklch(72% 0.12 210)'
+  colorInfoContent: 'oklch(95% 0.02 210)'
+  colorSuccess: 'oklch(70% 0.15 160)'
+  colorSuccessContent: 'oklch(95% 0.02 160)'
+  colorWarning: 'oklch(78% 0.14 50)'
+  colorWarningContent: 'oklch(20% 0.04 50)'
+  colorError: 'oklch(70% 0.191 22.216)'
+  colorErrorContent: 'oklch(39% 0.141 25.723)'
+  radiusSelector: '1rem'
+  radiusField: '0.5rem'
+  radiusBox: '1rem'
+  sizeSelector: '0.25rem'
+  sizeField: '0.25rem'
+  border: '1px'
+  noise: '0'
+  depth: '1'
+
+# TRANSLATIONS
+title: TeamShip
+welcomeMessageMd: |
+  # TeamShip
+  Cooperative sailing challenge. Join a team, pick a role, keep the ship on course.
