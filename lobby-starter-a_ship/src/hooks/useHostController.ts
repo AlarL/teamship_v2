@@ -509,7 +509,7 @@ export default function useHostController() {
 
 				// Update running stats
 				const stats = ship.currentAttemptStats;
-				if (stats) {
+				if (stats && stats.maxWater !== undefined) {
 					stats.maxWater = Math.max(stats.maxWater, ship.water);
 					stats.minHealth = Math.min(stats.minHealth, ship.health);
 					stats.coopScoreSum += ship.coopScore;
