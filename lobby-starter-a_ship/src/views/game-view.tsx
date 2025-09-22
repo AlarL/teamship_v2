@@ -1032,11 +1032,14 @@ const GameView: React.FC = () => {
                   <Settings className="w-5 h-5" />
                   {myRole ? `${ROLE_LABELS[myRole]} Controls` : 'Your Controls'}
                 </h3>
-                {myRole && (
-                  <div className="badge badge-warning badge-lg font-bold">
-                    {myRole.toUpperCase()}
-                  </div>
-                )}
+                <div className="flex items-center gap-3">
+                  {myRole && (
+                    <div className="badge badge-warning badge-lg font-bold">
+                      {myRole.toUpperCase()}
+                    </div>
+                  )}
+                  <QuickRoleSwitcher className="flex-shrink-0" />
+                </div>
               </div>
             </div>
             
