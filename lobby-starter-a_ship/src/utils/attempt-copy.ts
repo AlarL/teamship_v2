@@ -21,14 +21,14 @@ export const ATTEMPT_COPY: Record<AttemptReason, AttemptCopy> = {
 		emoji: '⏰'
 	},
 	overflow: {
-		title: 'Laev uppus',
-		body: 'Laev täitus veega. Rohkem bailereid ja kiirem reageerimine hoiavad selle pinnal.',
+		title: 'Ship Flooded',
+		body: 'The ship filled with water. More bailers and faster reactions are needed to keep it afloat.',
 		tone: 'error',
 		emoji: '🌊'
 	},
 	dead: {
-		title: 'Laev uppus',
-		body: 'Kere andis järele. Jälgige kriitilisi hoiatusi ja hoidke meeskond aktiivsena.',
+		title: 'Ship Wrecked',
+		body: 'The hull gave way. Monitor critical warnings and keep the team active.',
 		tone: 'error',
 		emoji: '💥'
 	}

@@ -76,6 +76,12 @@ export default function useHostController() {
 				const ship = s.ship;
 				const legend = LEGENDS[ship.legendId];
 
+				// SAFE RESET of attempt stats, deferred from finalizeRun
+				if (ship.pendingAttemptStatsReset) {
+					ship.currentAttemptStats = null;
+					ship.pendingAttemptStatsReset = false;
+				}
+
 				// Manual start only - no auto-start
 
 				// Countdown -> start
@@ -639,7 +645,7 @@ export default function useHostController() {
 
 						ship.attemptLog = attemptLog;
 						ship.attempts = attemptLog.length;
-						ship.currentAttemptStats = null;
+						ship.pendingAttemptStatsReset = true; // Defer reset to next tick
 
 						console.log('[NUCLEAR] finalizeRun completed successfully');
 
