@@ -1038,7 +1038,6 @@ const GameView: React.FC = () => {
                   </div>
                 )}
               </div>
-              <QuickRoleSwitcher className="w-full justify-between sm:justify-end" />
             </div>
             
             {myRole ? (
@@ -1052,7 +1051,7 @@ const GameView: React.FC = () => {
                   No role selected
                 </div>
                 <div className="text-sm opacity-70">
-                  Use the role switcher above to join a station. 
+                  Select a role to join your station.
                 </div>
                 <button
                   className="btn btn-warning btn-lg font-bold"
